@@ -12,7 +12,7 @@
     <script src="{% static 'lib/pusher.min.js' %}"></script>
     <script src="{% static 'lib/underscore-min.js' %}"></script>
     <script type="text/javascript">
-        window.csrfToken = '{{ csrf_token }}';
+        window.cartId = '{{ cart_id }}';
         var appKey = 'e36a43a6022a7610678f';
         var pusher = new Pusher(appKey);
         pusher.subscribe(csrfToken);

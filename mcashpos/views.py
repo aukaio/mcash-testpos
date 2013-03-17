@@ -9,6 +9,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import pusher
+import uuid
 
 def main(request):
     products = Product.objects.all()
@@ -20,6 +21,7 @@ def main(request):
                 'products': products,
                 'MCASH_SERVER': settings.MCASH_SERVER,
                 'SHORTLINK_ID': settings.SHORTLINK_ID,
+                'cart_id': uuid.uuid4(),
             }
         )
     )
