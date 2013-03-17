@@ -156,3 +156,6 @@ LOGGING = {
         },
     }
 }
+
+MCASH_SERVER = 'http://playgroundmcashservice.appspot.com/'
+SHORTLINK_ID = 'sdfsdf'

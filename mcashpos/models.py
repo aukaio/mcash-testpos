@@ -1,10 +1,18 @@
+import os
 from django.db import models
-
+from django.conf import settings
 
 class Product(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
     price = models.DecimalField(max_digits=12, decimal_places=2, blank=False, null=False)
     image_id = models.CharField(max_length=1025, null=True, blank=True)
+
+    @property
+    def image_url(self):
+        image_id = self.image_id
+        if not image_id:
+            image_id = 'coffee.png'
+        return settings.STATIC_URL + 'product_images/' + image_id
 
     def __unicode__(self):
         return u'%s' % (self.name)

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block head-extra %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            pusher.bind('qr-scan', function(data) {
+                $('#qr-status').html('Scanned by user').addClass('label-success');
+            })
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="span8" id="product-list">
+            <ul class="thumbnails">
+                {% for product in products %}
+                    <li class="span2">
+                        <div class="thumbnail">
+                            <img src="{{ product.image_url }}">
+                            {{ product.name }} | {{ product.price }}
+                            <div class="btn btn-primary">Add to cart</div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="offset1 span3 form">
+            <div class="row-fluid">
+                <div id="qr-container" class="span12">
+                    <img src="{{ MCASH_SERVER }}shortlink/v1/qr_image/{{ SHORTLINK_ID }}/{{ csrf_token }}">
+                    <div id="qr-status" class="label">Waiting for scan...</div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    Your cart
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6">
+                    <a href="#" class="btn-large btn-success">DONE!</a>
+                </div>
+                <div class="span6">
+                    <a href="#" class="btn-large btn-danger">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
