@@ -3,7 +3,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             pusher.bind('qr-scan', function(data) {
-                $('#qr-status').html('Scanned by user').addClass('label-success');
+                $('#qr-status').html('Scanned by user ' + data.token).addClass('label-success');
             })
         });
     </script>

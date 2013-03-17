@@ -1,9 +1,14 @@
+import json
 from django.shortcuts import render_to_response
 from mcashpos.models import Product
 from mcashpos.models import ProductSale
 from mcashpos.models import Sale
 from django.template import RequestContext
 from django.conf import settings
+from django.http import HttpResponseNotAllowed
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import pusher
 
 def main(request):
     products = Product.objects.all()
@@ -18,3 +23,15 @@ def main(request):
             }
         )
     )
+
+
+@csrf_exempt
+def qr_scan(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    data = json.loads(request.body)
+    p = pusher.Pusher()
+    p[data['argstring']].trigger('qr-scan', {'token': data['id']})
+    return HttpResponse('')
+
+

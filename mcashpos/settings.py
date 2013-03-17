@@ -158,4 +158,14 @@ LOGGING = {
 }
 
 MCASH_SERVER = 'http://playgroundmcashservice.appspot.com/'
-SHORTLINK_ID = 'sdfsdf'
+SHORTLINK_ID = 'pWtC~'
+PUSHER_APP_ID = '39544'
+PUSHER_APP_KEY = 'e36a43a6022a7610678f'
+PUSHER_APP_SECRET = 'fcac654dc089308ae627'
+PUSHER_SERVER = 'http://api.pusherapp.com/'
+PUSHER_APP_URL = PUSHER_SERVER + 'apps/39544/'
+
+import pusher
+pusher.app_id = PUSHER_APP_ID
+pusher.key = PUSHER_APP_KEY
+pusher.secret = PUSHER_APP_SECRET
