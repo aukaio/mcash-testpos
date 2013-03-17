@@ -15,7 +15,7 @@
         window.cartId = '{{ cart_id }}';
         var appKey = 'e36a43a6022a7610678f';
         var pusher = new Pusher(appKey);
-        pusher.subscribe(csrfToken);
+        pusher.subscribe(cartId);
     </script>
     {% block head-extra %}
     {% endblock %}
