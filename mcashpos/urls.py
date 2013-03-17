@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from mcashpos import views
+from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -18,3 +19,10 @@ urlpatterns = patterns('',
     url(r'^$', views.main),
     url(r'qr_scan/$', views.qr_scan),
 )
+
+
+if getattr(settings, 'SERVE_STATIC', False):
+    urlpatterns += patterns(
+        '',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    )

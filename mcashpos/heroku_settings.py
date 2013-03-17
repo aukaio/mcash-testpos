@@ -1,5 +1,7 @@
 from mcashpos.settings import *
 
+SERVE_STATIC = True
+
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config()
 
