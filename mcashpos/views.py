@@ -32,6 +32,6 @@ def qr_scan(request):
     data = json.loads(request.body)
     p = pusher.Pusher()
     p[data['argstring']].trigger('qr-scan', {'token': data['id']})
-    return HttpResponse('')
+    return HttpResponse(json.dumps({'text':'OK'}))
 
 
