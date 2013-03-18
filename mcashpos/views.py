@@ -1,4 +1,7 @@
+import base64
 import json
+import pusher
+import uuid
 from django.shortcuts import render_to_response
 from mcashpos.models import Product
 from mcashpos.models import ProductSale
@@ -8,8 +11,6 @@ from django.conf import settings
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import pusher
-import uuid
 
 def main(request):
     products = Product.objects.all()
@@ -21,7 +22,7 @@ def main(request):
                 'products': products,
                 'MCASH_SERVER': settings.MCASH_SERVER,
                 'SHORTLINK_ID': settings.SHORTLINK_ID,
-                'cart_id': uuid.uuid4(),
+                'cart_id': base64.urlsafe_b64encode(uuid.uuid4().bytes).replace('=', ''),
             }
         )
     )

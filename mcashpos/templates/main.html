@@ -3,8 +3,13 @@
     <script type="text/javascript">
         $(document).ready(function() {
             pusher.bind('qr-scan', function(data) {
-                $('#qr-status').html('Scanned by user ' + data.token).addClass('label-success');
-            })
+                var img = $('#qr-image');
+                var innerContainer = $('#qr-container-inner');
+                innerContainer.height(img.height()).width(img.width());
+                img.parent().slideUp(400, function() {
+                    $('#qr-status').fadeIn('fast');
+                });
+            });
         });
     </script>
 {% endblock %}
@@ -27,8 +32,12 @@
         <div class="offset1 span3 form">
             <div class="row-fluid">
                 <div id="qr-container" class="span12">
-                    <img src="{{ MCASH_SERVER }}shortlink/v1/qr_image/{{ SHORTLINK_ID }}/{{ cart_id }}">
-                    <div id="qr-status" class="label">Waiting for scan...</div>
+                    <div id="qr-container-inner" style="height: 220px; width: 220px;">
+                        <div>
+                            <img id="qr-image" src="{{ MCASH_SERVER }}shortlink/v1/qr_image/{{ SHORTLINK_ID }}/{{ cart_id }}">
+                        </div>
+                        <span id="qr-status" class="label label-success" style="display: none;">QR scanned</span>
+                    </div>
                 </div>
             </div>
             <div class="row-fluid">
