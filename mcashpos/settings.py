@@ -159,6 +159,8 @@ LOGGING = {
 }
 
 MCASH_SERVER = 'http://playgroundmcashservice.appspot.com/'
+MERCHANT_ID = 'fc7e02395e3048a79a814be51d825937'
+MCASH_SECRET = 'secret'
 SHORTLINK_ID = 'pWtC~'
 PUSHER_APP_ID = '39544'
 PUSHER_APP_KEY = 'e36a43a6022a7610678f'
