@@ -158,7 +158,8 @@ LOGGING = {
     }
 }
 
-MERCHANT_API_URL = 'https://playgroundmcashservice.appspot.com/merchantapi/v1'
+MCASH_SERVER = 'https://playgroundmcashservice.appspot.com/'
+MERCHANT_API_URL = 'merchantapi/v1'
 MERCHANT_ID = 'fc7e02395e3048a79a814be51d825937'
 MCASH_SECRET = 'secret'
 SHORTLINK_ID = 'pWtC~'
