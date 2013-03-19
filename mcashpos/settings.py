@@ -158,7 +158,7 @@ LOGGING = {
     }
 }
 
-MCASH_SERVER = 'http://playgroundmcashservice.appspot.com/'
+MERCHANT_API_URL = 'https://playgroundmcashservice.appspot.com/merchantapi/v1'
 MERCHANT_ID = 'fc7e02395e3048a79a814be51d825937'
 MCASH_SECRET = 'secret'
 SHORTLINK_ID = 'pWtC~'
@@ -172,3 +172,9 @@ import pusher
 pusher.app_id = PUSHER_APP_ID
 pusher.key = PUSHER_APP_KEY
 pusher.secret = PUSHER_APP_SECRET
+
+from mcashpos.pos import POS
+POS.api_url = MERCHANT_API_URL
+POS.merchant_id = MERCHANT_ID
+POS.pos_id = '1'
+POS.secret = MCASH_SECRET

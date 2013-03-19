@@ -11,6 +11,7 @@ from django.conf import settings
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from mcashpos.pos import POS
 
 def main(request):
     products = Product.objects.all()
@@ -35,6 +36,14 @@ def qr_scan(request):
     data = json.loads(request.body)
     p = pusher.Pusher()
     p[data['argstring']].trigger('qr-scan', {'token': data['id']})
+
+    pos = POS()
+    pos.put_payment_request(
+        data['argstring'],
+        data['token'],
+        '10.0',
+        'Hello world',
+    )
     return HttpResponse(json.dumps({'text':'OK'}))
 
 
