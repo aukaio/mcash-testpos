@@ -7,7 +7,7 @@
                 var innerContainer = $('#qr-container-inner');
                 innerContainer.height(img.height()).width(img.width());
                 img.parent().slideUp(400, function() {
-                    $('#qr-status').html('QR scanned: ' + data.id).fadeIn('fast');
+                    $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
                 });
             });
         });
