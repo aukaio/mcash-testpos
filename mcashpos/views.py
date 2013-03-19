@@ -40,7 +40,7 @@ def qr_scan(request):
     pos = POS()
     pos.put_payment_request(
         data['argstring'],
-        data['token'],
+        data['id'],
         '10.0',
         'Hello world',
     )
