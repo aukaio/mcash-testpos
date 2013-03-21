@@ -21,6 +21,17 @@
         $(document).ready(function() {
             window.pos = new Pos(posSettings, cartId);
         });
+        var pusher = new Pusher(posSettings.pusherAppKey);
+        pusher.subscribe(cartId);
+        pusher.bind('qr-scan', function(data) {
+            var img = $('#qr-image');
+            var innerContainer = $('#qr-container-inner');
+            innerContainer.height(img.height()).width(img.width());
+            img.parent().slideUp(200, function() {
+                $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+            });
+            pos.putPaymentRequest(data.token, '10.00', 'Hello world');
+        });
         console.log(posSettings)
     </script>
     {% block head-extra %}
