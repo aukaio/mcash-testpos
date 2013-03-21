@@ -2,14 +2,6 @@
 {% block head-extra %}
     <script type="text/javascript">
         $(document).ready(function() {
-            pusher.bind('qr-scan', function(data) {
-                var img = $('#qr-image');
-                var innerContainer = $('#qr-container-inner');
-                innerContainer.height(img.height()).width(img.width());
-                img.parent().slideUp(400, function() {
-                    $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
-                });
-            });
         });
     </script>
 {% endblock %}

@@ -11,6 +11,17 @@ function Pos(settings, cartId) {
     posUrl = '{0}/merchant/{1}/pos/{2}/'.format(settings.merchantApiUrl, settings.merchantId, settings.posId);
     this.cartId = cartId;
     this.settings = settings;
+    this.pusher = new Pusher(posSettings.pusherAppKey);
+    this.pusher.subscribe(cartId);
+    this.pusher.bind('qr-scan', function(data) {
+        var img = $('#qr-image');
+        var innerContainer = $('#qr-container-inner');
+        innerContainer.height(img.height()).width(img.width());
+        img.parent().slideUp(200, function() {
+            $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+        });
+        this.putPaymentRequest(data.token, '10.00', 'Hello world');
+    });
 
     $.ajaxSetup({
         accepts: 'application/json',
@@ -43,7 +54,17 @@ function Pos(settings, cartId) {
             data: JSON.stringify(pr),
             success: function(data, status, jqXHR) {
                 window.paymentRequest = new PaymentRequest(data);
-                alert(status);
+                $('#waitmodal').modal('show');
+                function callback(data, status, jqXHR) {
+                    if (status == 'success') {
+                        if (data.status != 'pending') {
+                            $('#waitmodal').modal('hide');
+                            return;
+                        }
+                    }
+                    setTimeout(function () {paymentRequest.getOutcome(callback)}, 500);
+                }
+                paymentRequest.getOutcome(callback);
             }
         })
     }
@@ -55,7 +76,8 @@ function PaymentRequest(attrs) {
         $.ajax({
             url: url,
             type: 'GET',
-            success: callback
+            success: callback,
+            error: callback
         })
     }
     return attrs;

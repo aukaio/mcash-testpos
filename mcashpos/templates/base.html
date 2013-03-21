@@ -18,10 +18,10 @@
         {% autoescape off %}
         var posSettings = {{ pos_settings.as_json }};
         {% endautoescape %}
-        var pos = new Pos(posSettings, cartId);
+        $(document).ready(function() {
+            window.pos = new Pos(posSettings, cartId);
+        });
         console.log(posSettings)
-        var pusher = new Pusher(posSettings.pusherAppKey);
-        pusher.subscribe(cartId);
     </script>
     {% block head-extra %}
     {% endblock %}
@@ -33,5 +33,16 @@
             {% endblock %}
         </div>
     {% endblock %}
+<div class="modal hide fade" id="waitmodal" data-backdrop="static">
+    <div class="modal-header">
+       Waiting for payment.
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
 </body>
 </html>
