@@ -49,6 +49,7 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
                     if (status == 'success') {
                         if (data.status != 'pending') {
                             $('#waitmodal').modal('hide');
+                            window.location = '/';
                             return;
                         }
                     }
