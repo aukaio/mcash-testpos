@@ -13,15 +13,6 @@ function Pos(settings, cartId) {
     this.settings = settings;
     this.pusher = new Pusher(posSettings.pusherAppKey);
     this.pusher.subscribe(cartId);
-    this.pusher.bind('qr-scan', function(data) {
-        var img = $('#qr-image');
-        var innerContainer = $('#qr-container-inner');
-        innerContainer.height(img.height()).width(img.width());
-        img.parent().slideUp(200, function() {
-            $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
-        });
-        this.putPaymentRequest(data.token, '10.00', 'Hello world');
-    });
 
     $.ajaxSetup({
         accepts: 'application/json',
@@ -66,8 +57,18 @@ function Pos(settings, cartId) {
                 }
                 paymentRequest.getOutcome(callback);
             }
-        })
+        });
     }
+    var putPaymentRequest = this.putPaymentRequest;
+    this.pusher.bind('qr-scan', function(data) {
+        var img = $('#qr-image');
+        var innerContainer = $('#qr-container-inner');
+        innerContainer.height(img.height()).width(img.width());
+        img.parent().slideUp(200, function() {
+            $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+        });
+        putPaymentRequest(data.token, '10.00', 'Hello world');
+    });
 }
 
 function PaymentRequest(attrs) {
