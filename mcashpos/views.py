@@ -18,7 +18,7 @@ from mcashpos.serializers import Serializer
 
 def main(request):
     products = Product.objects.all()
-    return render_to_response(
+    resp = render_to_response(
         'main.html',
         RequestContext(
             request,
@@ -29,6 +29,8 @@ def main(request):
             }
         )
     )
+    resp['Access-Control-Allow-Headers'] = '*'
+    return resp
 
 
 @csrf_exempt
@@ -39,13 +41,6 @@ def qr_scan(request):
     p = pusher.Pusher()
     p[data['argstring']].trigger('qr-scan', {'token': data['id']})
 
-    pos = POS()
-    pos.put_payment_request(
-        data['argstring'],
-        data['id'],
-        '10.0',
-        'Hello world',
-    )
     return HttpResponse(json.dumps({'text':'OK'}))
 
 
@@ -53,3 +48,23 @@ def list_products(request):
     return HttpResponse(Serializer().serialize(Product.objects.all()), content_type='application/json')
 
 
+@csrf_exempt
+def sale_request(request, tid):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    data = json.loads(request.body)
+    data['tid'] = tid
+    pos = POS()
+    return HttpResponse(
+        json.dumps(pos.put_payment_request(
+            tid,
+            data['customer'],
+            data['amount'],
+            data.get('text', ''),
+        ))
+    )
+
+
+def get_outcome(request, tid):
+    pos = POS()
+    return HttpResponse(json.dumps(pos.get_outcome(tid)), content_type='application/json')

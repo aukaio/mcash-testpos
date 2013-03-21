@@ -33,7 +33,7 @@ class POS(object):
             'Content-Type': 'application/json',
         }
 
-    def do_request(self, url, data=None, method=None, extra_headers={}):
+    def do_request(self, url, data=None, method='GET', extra_headers={}):
         headers = self.get_headers()
         headers.update(extra_headers)
         request = Request(self.get_pos_url() + url, data, method, headers)
@@ -63,6 +63,10 @@ class POS(object):
         print data
         url = 'sale_request/%s/' % pos_tid
         return self.do_request(url, data, 'PUT')
+
+    def get_outcome(self, pos_tid):
+        url = 'sale_request/%s/outcome/' % pos_tid
+        return self.do_request(url)
 
     def build_payment_request_data(
             self,

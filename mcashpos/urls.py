@@ -19,6 +19,8 @@ urlpatterns = patterns('',
     url(r'^$', views.main),
     url(r'^qr[_-]scan/$', views.qr_scan),
     url(r'^products/$', views.list_products),
+    url(r'^sale_request/(?P<tid>[\w_-]+)/$', views.sale_request),
+    url(r'^outcome/(?P<tid>[\w_-]+)/$', views.get_outcome),
 )
 
 
