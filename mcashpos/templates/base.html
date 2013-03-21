@@ -13,6 +13,7 @@
     <link href="{% static 'custom.css' %}" rel="stylesheet" media="screen">
     <script type="text/javascript">
         window.cartId = '{{ cart_id }}';
+        console.log('Cart ID: ' + cartId);
         var appKey = 'e36a43a6022a7610678f';
         var pusher = new Pusher(appKey);
         pusher.subscribe(cartId);

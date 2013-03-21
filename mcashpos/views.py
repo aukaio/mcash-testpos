@@ -15,6 +15,7 @@ from mcashpos.pos import POS
 from mcashpos.models import Product
 from mcashpos.serializers import Serializer
 
+
 def main(request):
     products = Product.objects.all()
     return render_to_response(
