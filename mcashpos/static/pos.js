@@ -25,10 +25,20 @@ function Pos(settings, cartId) {
     });
 
     this.paymentRequestTries = 0
-    this.getPaymentRequestId = function() {
-        return this.cartId + '-' + this.paymentRequestTries;
-    }
-    this.putPaymentRequest = function(customer, amount, text, additionalEdit) {
+    this.pusher.bind('qr-scan', function(data) {
+        var img = $('#qr-image');
+        var innerContainer = $('#qr-container-inner');
+        innerContainer.height(img.height()).width(img.width());
+        img.parent().slideUp(200, function() {
+            $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+        });
+        this.putPaymentRequest(data.token, '10.00', 'Hello world');
+    });
+}
+Pos.prototype.getPaymentRequestId = function() {
+    return this.cartId + '-' + this.paymentRequestTries;
+}
+Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdit) {
        this.paymentRequestTries += 1
        var pr = {
             'customer': customer,
@@ -59,17 +69,6 @@ function Pos(settings, cartId) {
             }
         });
     }
-    var putPaymentRequest = this.putPaymentRequest;
-    this.pusher.bind('qr-scan', function(data) {
-        var img = $('#qr-image');
-        var innerContainer = $('#qr-container-inner');
-        innerContainer.height(img.height()).width(img.width());
-        img.parent().slideUp(200, function() {
-            $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
-        });
-        putPaymentRequest(data.token, '10.00', 'Hello world');
-    });
-}
 
 function PaymentRequest(attrs) {
     attrs.getOutcome = function(callback) {
