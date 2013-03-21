@@ -17,7 +17,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.main),
-    url(r'qr[_-]scan/$', views.qr_scan),
+    url(r'^qr[_-]scan/$', views.qr_scan),
+    url(r'^products/$', views.list_products),
 )
 
 

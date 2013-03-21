@@ -12,6 +12,8 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from mcashpos.pos import POS
+from mcashpos.models import Product
+from mcashpos.serializers import Serializer
 
 def main(request):
     products = Product.objects.all()
@@ -45,5 +47,9 @@ def qr_scan(request):
         'Hello world',
     )
     return HttpResponse(json.dumps({'text':'OK'}))
+
+
+def list_products(request):
+    return HttpResponse(Serializer().serialize(Product.objects.all()), content_type='application/json')
 
 
