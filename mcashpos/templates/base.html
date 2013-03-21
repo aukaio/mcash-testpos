@@ -14,8 +14,11 @@
     <script type="text/javascript">
         window.cartId = '{{ cart_id }}';
         console.log('Cart ID: ' + cartId);
-        var appKey = 'e36a43a6022a7610678f';
-        var pusher = new Pusher(appKey);
+        {% autoescape off %}
+        var posSettings = {{ pos_settings.as_json }};
+        {% endautoescape %}
+        console.log(posSettings)
+        var pusher = new Pusher(posSettings.pusherAppKey);
         pusher.subscribe(cartId);
     </script>
     {% block head-extra %}

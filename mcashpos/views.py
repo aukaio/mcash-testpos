@@ -24,8 +24,7 @@ def main(request):
             request,
             {
                 'products': products,
-                'MCASH_SERVER': settings.MCASH_SERVER,
-                'SHORTLINK_ID': settings.SHORTLINK_ID,
+                'pos_settings': settings.POS_SETTINGS,
                 'cart_id': base64.urlsafe_b64encode(uuid.uuid4().bytes).replace('=', ''),
             }
         )

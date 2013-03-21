@@ -34,7 +34,7 @@
                 <div id="qr-container" class="span12">
                     <div id="qr-container-inner" style="height: 220px; width: 220px;">
                         <div>
-                            <img id="qr-image" src="{{ MCASH_SERVER }}shortlink/v1/qr_image/{{ SHORTLINK_ID }}/{{ cart_id }}">
+                            <img id="qr-image" src="{{ pos_settings.MCASH_SERVER }}shortlink/v1/qr_image/{{ pos_settings.SHORTLINK_ID }}/{{ cart_id }}">
                         </div>
                         <span id="qr-status" class="label label-success" style="display: none;">QR scanned</span>
                     </div>

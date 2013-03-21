@@ -158,24 +158,42 @@ LOGGING = {
     }
 }
 
-MCASH_SERVER = 'https://playgroundmcashservice.appspot.com/'
-MERCHANT_API_URL = MCASH_SERVER + 'merchantapi/v1'
-MERCHANT_ID = 'fc7e02395e3048a79a814be51d825937'
-MCASH_SECRET = 'secret'
-SHORTLINK_ID = 'pWtC~'
-PUSHER_APP_ID = '39544'
-PUSHER_APP_KEY = 'e36a43a6022a7610678f'
-PUSHER_APP_SECRET = 'fcac654dc089308ae627'
-PUSHER_SERVER = 'http://api.pusherapp.com/'
-PUSHER_APP_URL = PUSHER_SERVER + 'apps/39544/'
 
+class POS_SETTINGS(object):
+    MCASH_SERVER = 'https://playgroundmcashservice.appspot.com/'
+    MERCHANT_API_URL = MCASH_SERVER + 'merchantapi/v1'
+    MERCHANT_ID = 'fc7e02395e3048a79a814be51d825937'
+    POS_ID = '1'
+    MCASH_SECRET = 'secret'
+    SHORTLINK_ID = 'pWtC~'
+    PUSHER_APP_ID = '39544'
+    PUSHER_APP_KEY = 'e36a43a6022a7610678f'
+    PUSHER_SERVER = 'http://api.pusherapp.com/'
+    PUSHER_APP_URL = PUSHER_SERVER + 'apps/39544/'
+
+    @classmethod
+    def as_dict(cls):
+        return {key: value for key, value in filter(lambda a: a[0].upper() == a[0], cls.__dict__.items())}
+
+    @classmethod
+    def as_json(cls):
+        import json
+        import re
+        r = re.compile(r'_(\w)')
+        d = cls.as_dict()
+        for key in d.keys():
+            d[r.sub(lambda pat: pat.group(1).upper(), key.lower())] = d.pop(key)
+        return json.dumps(d)
+
+
+PUSHER_APP_SECRET = 'fcac654dc089308ae627'
 import pusher
-pusher.app_id = PUSHER_APP_ID
-pusher.key = PUSHER_APP_KEY
+pusher.app_id = POS_SETTINGS.PUSHER_APP_ID
+pusher.key = POS_SETTINGS.PUSHER_APP_KEY
 pusher.secret = PUSHER_APP_SECRET
 
 from mcashpos.pos import POS
-POS.api_url = MERCHANT_API_URL
-POS.merchant_id = MERCHANT_ID
-POS.pos_id = '1'
-POS.secret = MCASH_SECRET
+POS.api_url = POS_SETTINGS.MERCHANT_API_URL
+POS.merchant_id = POS_SETTINGS.MERCHANT_ID
+POS.pos_id = POS_SETTINGS.POS_ID
+POS.secret = POS_SETTINGS.MCASH_SECRET
