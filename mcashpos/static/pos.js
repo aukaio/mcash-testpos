@@ -7,10 +7,14 @@ if (!String.prototype.format) {
     };
 }
 
-function Pos(settings, cartId) {
+function Pos(settings, cartId, saleManager) {
     posUrl = '{0}/merchant/{1}/pos/{2}/'.format(settings.merchantApiUrl, settings.merchantId, settings.posId);
     this.cartId = cartId;
     this.settings = settings;
+    this.token = null;
+    this.saleReady = false;
+    this.saleManager = saleManager;
+    this.additionalEdit = false;
 
     $.ajaxSetup({
         accepts: 'application/json',
@@ -26,6 +30,24 @@ function Pos(settings, cartId) {
 }
 Pos.prototype.getPaymentRequestId = function() {
     return this.cartId + '-' + this.paymentRequestTries;
+}
+Pos.prototype.setToken = function(token) {
+    this.token = token;
+    this.checkReadyAndDoSale();
+}
+Pos.prototype.setSaleReady = function(isReady) {
+    this.isReady = isReady === undefined ? true : isReady;
+    this.checkReadyAndDoSale();
+}
+Pos.prototype.checkReadyAndDoSale = function() {
+    if (this.isReady && this.token != null) {
+        this.putPaymentRequest(
+            this.token,
+            this.saleManager.total(),
+            'Please pay',
+            this.additionalEdit
+        )
+    }
 }
 Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdit) {
        this.paymentRequestTries += 1
