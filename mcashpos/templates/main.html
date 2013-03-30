@@ -14,6 +14,7 @@
 
 {% block content %}
     <script type="text" id="template-product">
+        <% $.each(products, function(index, product) { %>
         <li class="span2">
             <div class="thumbnail" data-index="<%= index %>">
                 <img src="<%= product.image_url %>">
@@ -21,6 +22,7 @@
                 <div class="btn btn-primary">Add to cart</div>
             </div>
         </li>
+        <% }); %>
     </script>
     <div class="row">
         <div class="span8" id="product-list-container">

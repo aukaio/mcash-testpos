@@ -64,17 +64,14 @@ function ProductListManager(productsUrl, productList, productTemplate) {
     this.url = productsUrl;
     this.productList = productList;
     this.productTemplate = productTemplate;
-    this.products = [];
+    this.products = {};
 }
 
 ProductListManager.prototype.populateList = function() {
-    this.productList.empty();
     var plm = this;
-    for (var i in this.products) {
-        this.productList.append(this.productTemplate({index: i, product: this.products[i]}));
-    }
+    this.productList.html(this.productTemplate({products: this.products}));
     $(this.productList).find('li').click(function() {
-        var index = parseInt($(this).find('.thumbnail').attr('data-index'));
+        var index = $(this).find('.thumbnail').attr('data-index');
         var product = plm.products[index];
         alert(product.name);
     });
@@ -85,6 +82,10 @@ ProductListManager.prototype.update = function() {
         plm.products = data;
         plm.populateList();
     });
+}
+
+function SaleManager(saleDisplay, displayListTemplate, receiptTemplate, paymentRequestTemplate) {
+
 }
 
 
