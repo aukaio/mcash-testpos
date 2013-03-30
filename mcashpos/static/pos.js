@@ -60,10 +60,11 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
         });
     }
 
-function ProductListManager(productsUrl, productList, productTemplate) {
+function ProductListManager(productsUrl, productList, productTemplate, saleManager) {
     this.url = productsUrl;
     this.productList = productList;
     this.productTemplate = productTemplate;
+    this.saleManager = saleManager;
     this.products = {};
 }
 
@@ -73,7 +74,7 @@ ProductListManager.prototype.populateList = function() {
     $(this.productList).find('li').click(function() {
         var index = $(this).find('.thumbnail').attr('data-index');
         var product = plm.products[index];
-        alert(product.name);
+        plm.saleManager.add(product);
     });
 }
 ProductListManager.prototype.update = function() {
@@ -84,10 +85,27 @@ ProductListManager.prototype.update = function() {
     });
 }
 
-function SaleManager(saleDisplay, displayListTemplate, receiptTemplate, paymentRequestTemplate) {
-
+function SaleManager(display, displayTemplate, receiptTemplate, saleRequestTemplate) {
+    this.display = display;
+    this.displayTemplate = displayTemplate;
+    this.receiptTemplate = receiptTemplate;
+    this.saleRequestTemplate = saleRequestTemplate;
+    this.products = [];
+    this.updateDisplay();
 }
 
+SaleManager.prototype.updateDisplay = function() {
+    this.display.html(this.displayTemplate(this))
+}
+SaleManager.prototype.sum = function() {
+    sum = 0;
+    $.each(this.products, function(i, prod) { sum += prod.price });
+    return sum;
+}
+SaleManager.prototype.add = function(product) {
+    this.products.push(product);
+    this.updateDisplay();
+}
 
 function PaymentRequest(attrs) {
     attrs.getOutcome = function(callback) {

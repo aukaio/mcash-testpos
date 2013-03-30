@@ -2,10 +2,15 @@
 {% block head-extra %}
     <script type="text/javascript">
         $(document).ready(function() {
+            window.saleManager = new SaleManager(
+                    $('#sale-display'),
+                    _.template($('#template-sale-display').html())
+            )
             window.plm = new ProductListManager(
                     '/products/',
                     $('#product-list'),
-                    _.template($('#template-product').html())
+                    _.template($('#template-product').html()),
+                    saleManager
             );
             plm.update();
         });
@@ -18,11 +23,22 @@
         <li class="span2">
             <div class="thumbnail" data-index="<%= index %>">
                 <img src="<%= product.image_url %>">
-                <%= product.name %> | <%= product.price %>
+                <%= product.name %> | <%= parseFloat(product.price).toFixed(2) %>
                 <div class="btn btn-primary">Add to cart</div>
             </div>
         </li>
         <% }); %>
+    </script>
+    <script type="text" id="template-sale-display">
+        <table class="table">
+            <h4>Your cart</h4>
+            <% $.each(products, function(index, product) { %>
+            <tr>
+                <td><%= product.name %></td>
+                <td style="text-align: right;"><%= parseFloat(product.price).toFixed(2) %></td>
+            </tr>
+            <% }); %>
+         </table>
     </script>
     <div class="row">
         <div class="span8" id="product-list-container">
@@ -42,16 +58,17 @@
                 </div>
             </div>
             <div class="row-fluid">
-                <div class="span12">
-                    Your cart
-                </div>
-            </div>
-            <div class="row-fluid">
                 <div class="span6">
                     <a href="#" class="btn-large btn-success">DONE!</a>
                 </div>
                 <div class="span6">
-                    <a href="#" class="btn-large btn-danger">Cancel</a>
+                    <a href="/" class="btn-large btn-danger">Cancel</a>
+                </div>
+            </div>
+            <br>
+            <div class="row-fluid">
+                <div class="span12" id="sale-display">
+                    Your cart
                 </div>
             </div>
         </div>
