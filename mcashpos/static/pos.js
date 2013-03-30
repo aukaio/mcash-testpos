@@ -80,7 +80,7 @@ ProductListManager.prototype.populateList = function() {
 ProductListManager.prototype.update = function() {
     var plm = this;
     $.getJSON(this.url, function(data, status, jqXHR) {
-        plm.products = data;
+        plm.products = $.map(data, function(prod) { prod.price = parseFloat(prod.price); return prod});
         plm.populateList();
     });
 }
@@ -100,7 +100,7 @@ SaleManager.prototype.updateDisplay = function() {
 SaleManager.prototype.sum = function() {
     sum = 0;
     $.each(this.products, function(i, prod) { sum += prod.price });
-    return sum;
+    return sum.toFixed(2);
 }
 SaleManager.prototype.add = function(product) {
     this.products.push(product);
