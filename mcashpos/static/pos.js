@@ -97,7 +97,7 @@ function SaleManager(display, displayTemplate, receiptTemplate, saleRequestTempl
 SaleManager.prototype.updateDisplay = function() {
     this.display.html(this.displayTemplate(this))
 }
-SaleManager.prototype.sum = function() {
+SaleManager.prototype.total = function() {
     sum = 0;
     $.each(this.products, function(i, prod) { sum += prod.price });
     return sum.toFixed(2);

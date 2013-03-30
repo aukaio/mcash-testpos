@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
 {% block head-extra %}
     <script type="text/javascript">
+        window.cartId = '{{ cart_id }}';
+        console.log('Cart ID: ' + cartId);
+        {% autoescape off %}
+            var posSettings = {{ pos_settings.as_json }};
+        {% endautoescape %}
+        console.log(posSettings)
         $(document).ready(function() {
+            window.pos = new Pos(posSettings, cartId);
+            window.pusher = new Pusher(posSettings.pusherAppKey);
+            pusher.subscribe(cartId);
+            pusher.bind('qr-scan', function(data) {
+                var img = $('#qr-image');
+                var innerContainer = $('#qr-container-inner');
+                innerContainer.height(img.height()).width(img.width());
+                img.parent().slideUp(200, function() {
+                    $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+                });
+                pos.putPaymentRequest(data.token, '10.00', 'Hello world');
+            });
             window.saleManager = new SaleManager(
                     $('#sale-display'),
                     _.template($('#template-sale-display').html())
@@ -30,16 +48,20 @@
         <% }); %>
     </script>
     <script type="text" id="template-sale-display">
-        <table class="table">
-            <h4>Your cart</h4>
-            <% $.each(products, function(index, product) { %>
-            <tr>
-                <td><%= product.name %></td>
-                <td style="text-align: right;"><%= parseFloat(product.price).toFixed(2) %></td>
-            </tr>
-            <% }); %>
+        <table class="table table-condensed table-striped">
+            <caption>Your cart</caption>
+            <thead>
+            <th>Total</th><th style="text-align: right;"><%= total() %></th>
+            </thead>
+            <tbody>
+                <% $.each(products, function(index, product) { %>
+                <tr>
+                    <td><%= product.name %></td>
+                    <td style="text-align: right;"><%= parseFloat(product.price).toFixed(2) %></td>
+                </tr>
+                <% }); %>
+            </tbody>
          </table>
-        Total: <%= sum() %>
     </script>
     <div class="row">
         <div class="span8" id="product-list-container">
