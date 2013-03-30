@@ -44,7 +44,7 @@ Pos.prototype.checkReadyAndDoSale = function() {
         this.putPaymentRequest(
             this.token,
             this.saleManager.total(),
-            'Please pay',
+            this.saleManager.getSaleRequestText(),
             this.additionalEdit
         )
     }
@@ -107,7 +107,7 @@ ProductListManager.prototype.update = function() {
     });
 }
 
-function SaleManager(display, displayTemplate, receiptTemplate, saleRequestTemplate) {
+function SaleManager(display, displayTemplate, saleRequestTemplate, receiptTemplate) {
     this.display = display;
     this.displayTemplate = displayTemplate;
     this.receiptTemplate = receiptTemplate;
@@ -127,6 +127,9 @@ SaleManager.prototype.total = function() {
 SaleManager.prototype.add = function(product) {
     this.products.push(product);
     this.updateDisplay();
+}
+SaleManager.prototype.getSaleRequestText = function() {
+    return this.saleRequestTemplate(this);
 }
 
 function PaymentRequest(attrs) {

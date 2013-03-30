@@ -10,7 +10,13 @@
         $(document).ready(function() {
             window.saleManager = new SaleManager(
                     $('#sale-display'),
-                    _.template($('#template-sale-display').html())
+                    _.template($('#template-sale-display').html()),
+                    _.template(
+                            'Please pay for the following order:\n' +
+                            '<% $.each(products, function(index, product) { %>' +
+                            '<%= product.name %>:\t<%= parseFloat(product.price).toFixed(2) %>\n' +
+                            '<% }); %>'
+                    )
             )
             window.plm = new ProductListManager(
                     '/products/',
@@ -48,7 +54,7 @@
             <div class="thumbnail" data-index="<%= index %>">
                 <img src="<%= product.image_url %>">
                 <%= product.name %> <br> <%= parseFloat(product.price).toFixed(2) %> <br>
-                <div class="btn btn-primary btn-block"><i class="icon-shopping-cart|"></i> Add to cart</div>
+                <div class="btn btn-primary btn-block"><i class="icon-shopping-cart"></i> Add to cart</div>
             </div>
         </li>
         <% }); %>
@@ -68,6 +74,9 @@
                 <% }); %>
             </tbody>
          </table>
+    </script>
+    <script type="text" id="template-sale-request">
+
     </script>
     <div class="row">
         <div class="span8" id="product-list-container">
