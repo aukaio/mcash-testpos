@@ -2,23 +2,30 @@
 {% block head-extra %}
     <script type="text/javascript">
         $(document).ready(function() {
+            window.plm = new ProductListManager(
+                    '/products/',
+                    $('#product-list'),
+                    _.template($('#template-product').html())
+            );
+            plm.update();
         });
     </script>
 {% endblock %}
 
 {% block content %}
+    <script type="text" id="template-product">
+        <li class="span2">
+            <div class="thumbnail" data-index="<%= index %>">
+                <img src="<%= product.image_url %>">
+                <%= product.name %> | <%= product.price %>
+                <div class="btn btn-primary">Add to cart</div>
+            </div>
+        </li>
+    </script>
     <div class="row">
-        <div class="span8" id="product-list">
-            <ul class="thumbnails">
-                {% for product in products %}
-                    <li class="span2">
-                        <div class="thumbnail">
-                            <img src="{{ product.image_url }}">
-                            {{ product.name }} | {{ product.price }}
-                            <div class="btn btn-primary">Add to cart</div>
-                        </div>
-                    </li>
-                {% endfor %}
+        <div class="span8" id="product-list-container">
+            <ul id="product-list" class="thumbnails">
+                <li>No content</li>
             </ul>
         </div>
         <div class="offset1 span3 form">

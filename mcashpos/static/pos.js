@@ -60,6 +60,34 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
         });
     }
 
+function ProductListManager(productsUrl, productList, productTemplate) {
+    this.url = productsUrl;
+    this.productList = productList;
+    this.productTemplate = productTemplate;
+    this.products = [];
+}
+
+ProductListManager.prototype.populateList = function() {
+    this.productList.empty();
+    var plm = this;
+    for (var i in this.products) {
+        this.productList.append(this.productTemplate({index: i, product: this.products[i]}));
+    }
+    $(this.productList).find('li').click(function() {
+        var index = parseInt($(this).find('.thumbnail').attr('data-index'));
+        var product = plm.products[index];
+        alert(product.name);
+    });
+}
+ProductListManager.prototype.update = function() {
+    var plm = this;
+    $.getJSON(this.url, function(data, status, jqXHR) {
+        plm.products = data;
+        plm.populateList();
+    });
+}
+
+
 function PaymentRequest(attrs) {
     attrs.getOutcome = function(callback) {
         url = '/outcome/{0}/'.format(this.id)
