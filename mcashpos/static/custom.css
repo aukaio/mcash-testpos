@@ -16,3 +16,6 @@ div#product-list {
     margin-top: 45%;
 
 }
+#modal .modal-body {
+    min-height: 20px;
+}

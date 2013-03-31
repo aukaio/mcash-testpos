@@ -37,6 +37,9 @@ Pos.prototype.setToken = function(token) {
 }
 Pos.prototype.setSaleReady = function(isReady) {
     this.isReady = isReady === undefined ? true : isReady;
+    if (this.isReady) {
+        this.saleManager.setLocked();
+    }
     this.checkReadyAndDoSale();
 }
 Pos.prototype.checkReadyAndDoSale = function() {
@@ -119,6 +122,7 @@ function SaleManager(display, displayTemplate, saleRequestTemplate, receiptTempl
     this.receiptTemplate = receiptTemplate;
     this.saleRequestTemplate = saleRequestTemplate;
     this.products = [];
+    this.locked = false;
     this.updateDisplay();
 }
 
@@ -131,11 +135,16 @@ SaleManager.prototype.total = function() {
     return sum.toFixed(2);
 }
 SaleManager.prototype.add = function(product) {
-    this.products.push(product);
-    this.updateDisplay();
+    if (!this.locked) {
+        this.products.push(product);
+        this.updateDisplay();
+    }
 }
 SaleManager.prototype.getSaleRequestText = function() {
     return this.saleRequestTemplate(this);
+}
+SaleManager.prototype.setLocked = function(locked) {
+    this.locked = locked === undefined || locked;
 }
 
 function PaymentRequest(attrs) {
