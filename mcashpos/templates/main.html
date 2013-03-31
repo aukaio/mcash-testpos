@@ -14,7 +14,7 @@
                     _.template(
                             'Please pay for the following order:\n' +
                             '<% $.each(products, function(index, product) { %>' +
-                            '<%= product.name %>:\t<%= parseFloat(product.price).toFixed(2) %>\n' +
+                            '<%= product.name %>: <%= parseFloat(product.price).toFixed(2) %>\n' +
                             '<% }); %>'
                     )
             )

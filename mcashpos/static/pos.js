@@ -66,12 +66,18 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
             data: JSON.stringify(pr),
             success: function(data, status, jqXHR) {
                 window.paymentRequest = new PaymentRequest(data);
-                $('#waitmodal').modal('show');
+                $('#modal').find('.modal-body').html(
+                    '<div class="progress progress-striped active"><div class="bar" style="width: 100%">Waiting for payment</div></div>'
+                ).end()
+                    .find('.modal-footer').hide().end()
+                    .modal('show');
                 function callback(data, status, jqXHR) {
                     if (status == 'success') {
                         if (data.status != 'pending') {
-                            $('#waitmodal').modal('hide');
-                            window.location = '/';
+                            if (data.status == 'ok') text = 'Payment OK';
+                            else text = 'Payment request rejected';
+                            $('#modal .modal-body').html('<p>' + text + '</p>');
+                            $('#modal').find('.modal-footer').slideDown();
                             return;
                         }
                     }
