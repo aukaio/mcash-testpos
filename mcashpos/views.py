@@ -61,6 +61,7 @@ def sale_request(request, tid):
             data['customer'],
             data['amount'],
             data.get('text', ''),
+            additional_edit=data.get('additionalEdit', False)
         ))
     )
 
