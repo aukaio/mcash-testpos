@@ -43,6 +43,9 @@
                     $(this).addClass('disabled');
                 }
             });
+            $('#chk-allow-tip').prop('checked', pos.additionalEdit).change(function() {
+                pos.additionalEdit = $(this).prop('checked');
+            });
         });
     </script>
 {% endblock %}
@@ -101,6 +104,14 @@
                 </div>
                 <div class="span6">
                     <a href="/" class="btn btn-large btn-danger btn-block">Cancel</a>
+                </div>
+            </div>
+            <br>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="checkbox">
+                        <input id="chk-allow-tip" class="btn" type="checkbox"> Allow tip
+                    </label>
                 </div>
             </div>
             <br>

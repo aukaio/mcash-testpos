@@ -12,7 +12,7 @@ function Pos(settings, cartId, saleManager) {
     this.cartId = cartId;
     this.settings = settings;
     this.token = null;
-    this.saleReady = false;
+    this.isReady = false;
     this.saleManager = saleManager;
     this.additionalEdit = false;
 
