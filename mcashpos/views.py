@@ -52,7 +52,7 @@ def ad_order_scan(request):
     text = 'Nintendo Wii U Premium'
     pos = POS()
     pos.put_payment_request(
-        'ad_order:%s' % base64.b64encode(uuid.uuid4().get_bytes()).replace('=',''),
+        'ao-%s' % base64.urlsafe_b64encode(uuid.uuid4().get_bytes()).replace('=',''),
         data['id'],
         '299.00',
         text,
