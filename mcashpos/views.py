@@ -44,6 +44,23 @@ def qr_scan(request):
     return HttpResponse(json.dumps({'text':'OK'}))
 
 
+@csrf_exempt
+def ad_order_scan(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    data = json.loads(request.body)
+    text = 'Nintendo Wii U Premium'
+    pos = POS()
+    pos.put_payment_request(
+        'ad_order:%s' % base64.b64encode(uuid.uuid4().get_bytes()).replace('=',''),
+        data['id'],
+        '299.00',
+        text,
+        additional_edit=False
+    )
+    return HttpResponse(json.dumps({'text':'OK'}))
+
+
 def list_products(request):
     return HttpResponse(Serializer().serialize(Product.objects.all()), content_type='application/json')
 
