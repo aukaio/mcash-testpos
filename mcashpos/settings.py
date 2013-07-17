@@ -169,7 +169,7 @@ class POS_SETTINGS(object):
     PUSHER_APP_ID = '39544'
     PUSHER_APP_KEY = 'e36a43a6022a7610678f'
     PUSHER_SERVER = 'http://api.pusherapp.com/'
-    PUSHER_APP_URL = PUSHER_SERVER + 'apps/39544/'
+    PUSHER_APP_URL = '%s/apps/%s' % (PUSHER_SERVER, PUSHER_APP_ID)
 
     @classmethod
     def as_dict(cls):
