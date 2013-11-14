@@ -39,6 +39,7 @@ def qr_scan(request):
         return HttpResponseNotAllowed(['POST'])
     data = json.loads(request.body)
     p = pusher.Pusher()
+    data = data['object']
     p[data['argstring']].trigger('qr-scan', {'token': data['id']})
 
     return HttpResponse(json.dumps({'text':'OK'}))

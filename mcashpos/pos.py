@@ -82,11 +82,10 @@ class POS(object):
             'customer': customer,
             'amount': amount,
             'text': text,
-            'additionalAmount': additional_amount,
+            'additional_amount': additional_amount,
             'currency': currency,
-            'additionalEdit': additional_edit,
-            'allowCredit': allow_credit,
-            'posTimestamp': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+            'additional_edit': additional_edit,
+            'allow_credit': allow_credit,
         }
         return json.dumps(pr)
 
