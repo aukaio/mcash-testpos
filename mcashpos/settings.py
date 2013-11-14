@@ -161,7 +161,7 @@ LOGGING = {
 
 class POS_SETTINGS(object):
     MCASH_SERVER = 'https://mcashappdev.appspot.com/'
-    MERCHANT_API_URL = MCASH_SERVER + 'merchantapi/v1'
+    MERCHANT_API_URL = MCASH_SERVER + 'merchant/v1'
     MERCHANT_ID = 'uzzy40'
     USER_ID = 'pos1'
     POS_ID = '1'
@@ -198,3 +198,4 @@ POS.api_url = POS_SETTINGS.MERCHANT_API_URL
 POS.merchant_id = POS_SETTINGS.MERCHANT_ID
 POS.pos_id = POS_SETTINGS.POS_ID
 POS.secret = POS_SETTINGS.MCASH_SECRET
+POS.user_id = POS_SETTINGS.USER_ID

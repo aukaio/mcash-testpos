@@ -19,24 +19,28 @@ class POS(object):
     pos_id = None
     merchant_id = None
     secret = None
+    user_id = None
 
     def __init__(self):
         super(POS, self).__init__()
         self.request_opener = urllib2.build_opener(urllib2.HTTPSHandler)
 
     def get_pos_url(self):
-        return self.api_url.rstrip('/') + '/merchant/%s/pos/%s/' % (self.merchant_id, self.pos_id)
+        return self.api_url
 
     def get_headers(self):
         return {
-            'X-Mcash-Secret': self.secret,
+            'Authorization': 'SECRET ' + self.secret,
+            'Accept': 'application/vnd.mcash.api.merchant.v1+json',
+            'X-Mcash-Merchant': self.merchant_id,
+            'X-Mcash-User': self.user_id,
             'Content-Type': 'application/json',
         }
 
     def do_request(self, url, data=None, method='GET', extra_headers={}):
         headers = self.get_headers()
         headers.update(extra_headers)
-        request = Request(self.get_pos_url() + url, data, method, headers)
+        request = Request(self.api_url + url, data, method, headers)
         res = self.request_opener.open(request)
         return json.load(res)
 
@@ -53,6 +57,7 @@ class POS(object):
     ):
         data = self.build_payment_request_data(
             customer,
+            pos_tid,
             amount,
             text,
             additional_amount,
@@ -61,16 +66,17 @@ class POS(object):
             allow_credit,
         )
         print data
-        url = 'sale_request/%s/' % pos_tid
-        return self.do_request(url, data, 'PUT')
+        url = '/payment_request/'
+        return self.do_request(url, data, 'POST')
 
     def get_outcome(self, pos_tid):
-        url = 'sale_request/%s/outcome/' % pos_tid
+        url = '/payment_request/%s/outcome/' % pos_tid
         return self.do_request(url)
 
     def build_payment_request_data(
             self,
             customer,
+            pos_tid,
             amount,
             text,
             additional_amount='0.00',
@@ -86,6 +92,9 @@ class POS(object):
             'currency': currency,
             'additional_edit': additional_edit,
             'allow_credit': allow_credit,
+            'pos_tid': pos_tid,
+            'pos_id': self.pos_id,
+            'action': 'sale',
         }
         return json.dumps(pr)
 

@@ -77,7 +77,7 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
                 function callback(data, status, jqXHR) {
                     if (status == 'success') {
                         if (data.status != 'pending') {
-                            if (data.status == 'ok') text = 'Payment OK';
+                            if (data.status == 'auth') text = 'Payment OK';
                             else text = 'Payment request rejected';
                             $('#modal .modal-body').html('<p>' + text + '</p>');
                             $('#modal').find('.modal-footer').slideDown();
