@@ -1,3 +1,18 @@
+function setFinalResult(text) {
+    $('#modal .modal-body').html('<p>' + text + '</p>');
+    $('#modal').find('.modal-footer').slideDown();
+}
+function setIntermediateResult(text) {
+    $('#modal').find('.modal-body').html(
+            ('<div class="progress progress-striped active">' +
+                '<div class="bar" style="width: 100%">{0}</div>' +
+                '</div>').format(text)
+        ).end()
+        .find('.modal-footer').hide().end()
+        .modal('show');
+}
+
+
 if (!String.prototype.format) {
     String.prototype.format = function() {
         var args = arguments;
@@ -7,7 +22,7 @@ if (!String.prototype.format) {
     };
 }
 
-function Pos(settings, cartId, saleManager) {
+function Pos(settings, cartId, saleManager, pusher) {
     posUrl = '{0}/merchant/{1}/pos/{2}/'.format(settings.merchantApiUrl, settings.merchantId, settings.posId);
     this.cartId = cartId;
     this.settings = settings;
@@ -15,6 +30,7 @@ function Pos(settings, cartId, saleManager) {
     this.isReady = false;
     this.saleManager = saleManager;
     this.additionalEdit = false;
+    this.pusher = pusher;
 
     $.ajaxSetup({
         accepts: 'application/json',
@@ -30,18 +46,18 @@ function Pos(settings, cartId, saleManager) {
 }
 Pos.prototype.getPaymentRequestId = function() {
     return this.cartId + '-' + this.paymentRequestTries;
-}
+};
 Pos.prototype.setToken = function(token) {
     this.token = token;
     this.checkReadyAndDoSale();
-}
+};
 Pos.prototype.setSaleReady = function(isReady) {
     this.isReady = isReady === undefined ? true : isReady;
     if (this.isReady) {
         this.saleManager.setLocked();
     }
     this.checkReadyAndDoSale();
-}
+};
 Pos.prototype.checkReadyAndDoSale = function() {
     if (this.isReady && this.token != null) {
         this.putPaymentRequest(
@@ -51,45 +67,23 @@ Pos.prototype.checkReadyAndDoSale = function() {
             this.additionalEdit
         )
     }
-}
+};
 Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdit) {
-       this.paymentRequestTries += 1
-       var pr = {
-            'customer': customer,
-            'amount': amount,
-            'text': text || '',
-            'currency': 'NOK',
-            'additionalEdit': additionalEdit || false,
-            'allowCredit': true,
-            'posTimestamp': new Date().toUTCString('yyyy-MM-dd HH:mm:ss')
-       }
-        $.ajax({
-            url: '/sale_request/{0}/'.format(this.getPaymentRequestId()),
-            type: 'POST',
-            data: JSON.stringify(pr),
-            success: function(data, status, jqXHR) {
-                window.paymentRequest = new PaymentRequest(data);
-                $('#modal').find('.modal-body').html(
-                    '<div class="progress progress-striped active"><div class="bar" style="width: 100%">Waiting for payment</div></div>'
-                ).end()
-                    .find('.modal-footer').hide().end()
-                    .modal('show');
-                function callback(data, status, jqXHR) {
-                    if (status == 'success') {
-                        if (data.status != 'pending') {
-                            if (data.status == 'auth') text = 'Payment OK';
-                            else text = 'Payment request rejected';
-                            $('#modal .modal-body').html('<p>' + text + '</p>');
-                            $('#modal').find('.modal-footer').slideDown();
-                            return;
-                        }
-                    }
-                    setTimeout(function () {paymentRequest.getOutcome(callback)}, 500);
-                }
-                paymentRequest.getOutcome(callback);
-            }
-        });
-    }
+    this.paymentRequestTries += 1;
+    var tid = this.getPaymentRequestId()
+    var channel = this.pusher.subscribe(this.settings.pusherChannelPrefix + 'pr-' + tid);
+
+    setIntermediateResult('Making a payment request...');
+    var pr = window.paymentRequest = new PaymentRequest(tid, {
+        'customer': customer,
+        'amount': amount,
+        'text': text || '',
+        'currency': 'NOK',
+        'additionalEdit': additionalEdit || false,
+        'allowCredit': true
+    }, channel);
+    pr.createAndWaitForPayment();
+};
 
 function ProductListManager(productsUrl, productList, productTemplate, saleManager) {
     this.url = productsUrl;
@@ -107,14 +101,14 @@ ProductListManager.prototype.populateList = function() {
         var product = plm.products[index];
         plm.saleManager.add(product);
     });
-}
+};
 ProductListManager.prototype.update = function() {
     var plm = this;
     $.getJSON(this.url, function(data, status, jqXHR) {
         plm.products = $.map(data, function(prod) { prod.price = parseFloat(prod.price); return prod});
         plm.populateList();
     });
-}
+};
 
 function SaleManager(display, displayTemplate, saleRequestTemplate, receiptTemplate) {
     this.display = display;
@@ -128,34 +122,140 @@ function SaleManager(display, displayTemplate, saleRequestTemplate, receiptTempl
 
 SaleManager.prototype.updateDisplay = function() {
     this.display.html(this.displayTemplate(this))
-}
+};
 SaleManager.prototype.total = function() {
     sum = 0;
     $.each(this.products, function(i, prod) { sum += prod.price });
     return sum.toFixed(2);
-}
+};
 SaleManager.prototype.add = function(product) {
     if (!this.locked) {
         this.products.push(product);
         this.updateDisplay();
     }
-}
+};
 SaleManager.prototype.getSaleRequestText = function() {
     return this.saleRequestTemplate(this);
-}
+};
 SaleManager.prototype.setLocked = function(locked) {
     this.locked = locked === undefined || locked;
+};
+
+
+function PaymentRequest(tid, attrs, channel) {
+    this.tid = tid;
+    this.channel = channel;
+    this._events = {};
+    this.state = null;
+    this.attrs = attrs;
 }
 
-function PaymentRequest(attrs) {
-    attrs.getOutcome = function(callback) {
-        url = '/outcome/{0}/'.format(this.id)
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: callback,
-            error: callback
-        })
+PaymentRequest.prototype.create = function(success, error) {
+    var self = this;
+    if (success === undefined) success = [];
+    else if (success.constructor !== Array) success = [success];
+    if (error == undefined) error = [];
+    else if (error.constructor !== Array) error = [error];
+    success.unshift(function(data, status, jqXHR) {
+        self.id = data.id
+        self.state = 'pending';
+    });
+
+    $.ajax({
+        url: '/sale_request/{0}/'.format(self.tid),
+        type: 'POST',
+        data: JSON.stringify(self.attrs),
+        success: success,
+        error: error
+    });
+};
+
+PaymentRequest.prototype.bindEvents = function(events) {
+    self = this;
+    $.each(events, function(event, callback) {
+        self.channel.bind(event, callback);
+        self._events[event] = callback;
+    });
+};
+
+PaymentRequest.prototype.unbindEvents = function(events) {
+    self = this;
+    $.each(events, function(event, callback) {
+        self.channel.unbind(event);
+        delete self._events[event];
+    });
+};
+
+PaymentRequest.prototype.unbindAllEvents = function() {
+    if (!$.isEmptyObject(this._events)) this.unbindEvents(this._events);
+};
+
+
+PaymentRequest.prototype.getOutcome = function(callback) {
+    var url = '/outcome/{0}/'.format(this.id);
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: callback,
+        error: callback
+    });
+};
+
+PaymentRequest.prototype.checkAndSetState = function(required, new_state) {
+    if (this.state == new_state) return false;
+    if (required.constructor !== Array) required = [required];
+    var ok = false;
+    for (var i in required) {
+        if (required[i] == this.state) {
+            ok = true;
+            break;
+        }
     }
-    return attrs;
+    if (ok) this.state = new_state;
+    return ok;
 }
+
+PaymentRequest.prototype.createAndWaitForPayment = function() {
+    var self = this;
+    this.create(function(data, status, jqXHR) {
+        self.unbindAllEvents();
+        setIntermediateResult('Waiting for payment...');
+        self.bindEvents({
+            payment_authorized: function(data) {
+                if (!self.checkAndSetState('pending', 'auth')) return;
+                setIntermediateResult('Received payment. Capturing...');
+                $.ajax({
+                    url: '/capture/{0}/'.format(self.id),
+                    type: 'POST',
+                    success: function(data, status, jqXHR) {
+                    }
+                });
+            },
+            payment_captured: function(data) {
+                if (!self.checkAndSetState('auth', 'capture')) return;
+                setFinalResult('Payment OK');
+                self.unbindAllEvents();
+                self.channel.unsubscribe();
+            },
+            payment_aborted_by_customer: function(data) {
+                if (!self.checkAndSetState('pending', 'fail')) return;
+                setFinalResult('Payment request rejected by customer');
+                self.unbindAllEvents();
+                self.channel.unsubscribe();
+            },
+            payment_aborted_by_merchant: function(data) {
+                if (!self.checkAndSetState('pending', 'fail')) return;
+                setFinalResult('Payment request aborted by merchant');
+                self.unbindAllEvents();
+                self.channel.unsubscribe();
+            },
+            payment_request_expired: function(data) {
+                if (!self.checkAndSetState('pending', 'fail')) return;
+                setFinalResult('Payment request expired');
+                self.unbindAllEvents();
+                self.channel.unsubscribe();
+            }
+        });
+    });
+}
+

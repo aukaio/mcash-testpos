@@ -166,11 +166,12 @@ class POS_SETTINGS(object):
     USER_ID = 'pos1'
     POS_ID = '1'
     MCASH_SECRET = 'supersecret'
-    SHORTLINK_ID = 'drkLf'
+    SHORTLINK_ID = 'FzrfF'
     PUSHER_APP_ID = '39544'
-    PUSHER_APP_KEY = 'e36a43a6022a7610678f'
+    PUSHER_APP_KEY = 'b9ad66f2dcad7152fb47'
     PUSHER_SERVER = 'http://api.pusherapp.com/'
     PUSHER_APP_URL = '%s/apps/%s' % (PUSHER_SERVER, PUSHER_APP_ID)
+    PUSHER_CHANNEL_PREFIX = 'm-%s-' % MERCHANT_ID
 
     @classmethod
     def as_dict(cls):
@@ -190,7 +191,7 @@ class POS_SETTINGS(object):
 PUSHER_APP_SECRET = 'fcac654dc089308ae627'
 import pusher
 pusher.app_id = POS_SETTINGS.PUSHER_APP_ID
-pusher.key = POS_SETTINGS.PUSHER_APP_KEY
+pusher.key = 'e36a43a6022a7610678f'
 pusher.secret = PUSHER_APP_SECRET
 
 from mcashpos.pos import POS

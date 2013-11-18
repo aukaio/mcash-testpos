@@ -42,7 +42,10 @@ class POS(object):
         headers.update(extra_headers)
         request = Request(self.api_url + url, data, method, headers)
         res = self.request_opener.open(request)
-        return json.load(res)
+        try:
+            return json.load(res)
+        except ValueError:
+            return None
 
     def put_payment_request(
             self,
@@ -95,8 +98,14 @@ class POS(object):
             'pos_tid': pos_tid,
             'pos_id': self.pos_id,
             'action': 'sale',
+            'callback_uri': 'pusher:m-%s-pr-%s' % (self.merchant_id, pos_tid)
         }
         return json.dumps(pr)
+
+    def capture_payment_request(self, tid):
+        data = {'action': 'capture'}
+        url = '/payment_request/{}/'.format(tid)
+        return self.do_request(url, json.dumps(data), 'PUT')
 
 
 

@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'ad_order_scan/$', views.ad_order_scan),
     url(r'^products/$', views.list_products),
     url(r'^sale_request/(?P<tid>[\w_-]+)/$', views.sale_request),
+    url(r'^capture/(?P<tid>[\w_-]+)/$', views.capture),
     url(r'^outcome/(?P<tid>[\w_-]+)/$', views.get_outcome),
 )
 

@@ -25,17 +25,18 @@
                     saleManager
             );
             plm.update();
-            window.pos = new Pos(posSettings, cartId, saleManager);
             window.pusher = new Pusher(posSettings.pusherAppKey);
-            pusher.subscribe(cartId);
-            pusher.bind('qr-scan', function(data) {
+            window.pos = new Pos(posSettings, cartId, saleManager, window.pusher);
+            var channel = pusher.subscribe(posSettings.pusherChannelPrefix + 'scan');
+            channel.bind('shortlink_scanned', function(data) {
+                if (data.object.argstring != cartId) return;
                 var img = $('#qr-image');
                 var innerContainer = $('#qr-container-inner');
                 innerContainer.height(img.height()).width(img.width());
                 img.parent().slideUp(200, function() {
-                    $('#qr-status').html('QR scanned: ' + data.token).fadeIn('fast');
+                    $('#qr-status').html('QR scanned: ' + data.object.id).fadeIn('fast');
                 });
-                pos.setToken(data.token);
+                pos.setToken(data.object.id);
             });
             $('#btn-complete-sale').click(function() {
                 if (!$(this).hasClass('disabled')) {

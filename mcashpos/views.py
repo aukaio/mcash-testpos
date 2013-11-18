@@ -16,6 +16,12 @@ from mcashpos.models import Product
 from mcashpos.serializers import Serializer
 
 
+def _gen_tid(n):
+    import string
+    from Crypto.Random.random import choice
+    cs = string.ascii_letters + string.digits
+    return ''.join(choice(cs) for _ in range(n))
+
 def main(request):
     products = Product.objects.all()
     resp = render_to_response(
@@ -25,7 +31,7 @@ def main(request):
             {
                 'products': products,
                 'pos_settings': settings.POS_SETTINGS,
-                'cart_id': base64.urlsafe_b64encode(uuid.uuid4().bytes).replace('=', ''),
+                'cart_id': _gen_tid(10),
             }
         )
     )
@@ -82,6 +88,15 @@ def sale_request(request, tid):
             additional_edit=data.get('additionalEdit', False)
         ))
     )
+
+
+@csrf_exempt
+def capture(request, tid):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    pos = POS()
+    pos.capture_payment_request(tid)
+    return HttpResponse(status=204)
 
 
 def get_outcome(request, tid):
