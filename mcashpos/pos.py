@@ -20,6 +20,7 @@ class POS(object):
     merchant_id = None
     secret = None
     user_id = None
+    testbed_token = None
 
     def __init__(self):
         super(POS, self).__init__()
@@ -35,6 +36,7 @@ class POS(object):
             'X-Mcash-Merchant': self.merchant_id,
             'X-Mcash-User': self.user_id,
             'Content-Type': 'application/json',
+	    'X-Testbed-Token': self.testbed_token or ''
         }
 
     def do_request(self, url, data=None, method='GET', extra_headers={}):
