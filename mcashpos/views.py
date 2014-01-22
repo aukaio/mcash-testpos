@@ -55,7 +55,7 @@ def qr_scan(request):
 def ad_order_scan(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    data = json.loads(request.body)
+    data = json.loads(request.body)['object']
     text = 'Nintendo Wii U Premium'
     pos = POS()
     pos.put_payment_request(
