@@ -160,13 +160,14 @@ LOGGING = {
 
 
 class POS_SETTINGS(object):
-    MCASH_SERVER = 'https://mcashappdev.appspot.com/'
+    MCASH_SERVER = 'https://mcashtestbed.appspot.com/'
     MERCHANT_API_URL = MCASH_SERVER + 'merchant/v1'
-    MERCHANT_ID = 'uzzy40'
+    MERCHANT_ID = 'v3y4tf'
     USER_ID = 'pos1'
     POS_ID = '1'
+    TESTBED_TOKEN = 'z0YhQz36gbukcS7tdKy-uyVDvX4Hlr7kM_cizah2_EI'
     MCASH_SECRET = 'supersecret'
-    SHORTLINK_ID = 'FzrfF'
+    SHORTLINK_ID = 'D0uJg'
     PUSHER_APP_ID = '39544'
     PUSHER_APP_KEY = 'b9ad66f2dcad7152fb47'
     PUSHER_SERVER = 'http://api.pusherapp.com/'
@@ -200,3 +201,4 @@ POS.merchant_id = POS_SETTINGS.MERCHANT_ID
 POS.pos_id = POS_SETTINGS.POS_ID
 POS.secret = POS_SETTINGS.MCASH_SECRET
 POS.user_id = POS_SETTINGS.USER_ID
+POS.testbed_token = POS_SETTINGS.TESTBED_TOKEN
