@@ -1,6 +1,8 @@
 import urllib2
 import json
 from datetime import datetime
+import logging
+import requests
 
 
 class Request(urllib2.Request):
@@ -22,8 +24,10 @@ class POS(object):
     user_id = None
     testbed_token = None
 
-    def __init__(self):
+    def __init__(self, api_url):
         super(POS, self).__init__()
+        if api_url is not None:
+            self.api_url = api_url
         self.request_opener = urllib2.build_opener(urllib2.HTTPSHandler)
 
     def get_pos_url(self):
@@ -36,16 +40,16 @@ class POS(object):
             'X-Mcash-Merchant': self.merchant_id,
             'X-Mcash-User': self.user_id,
             'Content-Type': 'application/json',
-	    'X-Testbed-Token': self.testbed_token or ''
+            'X-Testbed-Token': self.testbed_token or ''
         }
 
     def do_request(self, url, data=None, method='GET', extra_headers={}):
         headers = self.get_headers()
         headers.update(extra_headers)
-        request = Request(self.api_url + url, data, method, headers)
-        res = self.request_opener.open(request)
+        logging.error('URL is {}{}'.format(self.api_url, url))
+        res = requests.request(method, self.api_url + url, headers=headers, data=data)
         try:
-            return json.load(res)
+            return res.json()
         except ValueError:
             return None
 

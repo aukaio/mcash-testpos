@@ -1,4 +1,5 @@
 # Django settings for mcashpos project.
+import inspect
 import os
 
 SITE_ROOT = os.path.dirname(__file__)
@@ -174,16 +175,19 @@ class POS_SETTINGS(object):
     PUSHER_APP_URL = '%s/apps/%s' % (PUSHER_SERVER, PUSHER_APP_ID)
     PUSHER_CHANNEL_PREFIX = 'm-%s-' % MERCHANT_ID
 
-    @classmethod
-    def as_dict(cls):
-        return {key: value for key, value in filter(lambda a: a[0].upper() == a[0], cls.__dict__.items())}
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            if v is not None:
+                setattr(self, k, v)
 
-    @classmethod
-    def as_json(cls):
+    def as_dict(self):
+        return {key: value for key, value in filter(lambda a: a[0].upper() == a[0], inspect.getmembers(self))}
+
+    def as_json(self):
         import json
         import re
         r = re.compile(r'_(\w)')
-        d = cls.as_dict()
+        d = self.as_dict()
         for key in d.keys():
             d[r.sub(lambda pat: pat.group(1).upper(), key.lower())] = d.pop(key)
         return json.dumps(d)

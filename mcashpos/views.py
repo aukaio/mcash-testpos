@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import pusher
 import uuid
 from django.shortcuts import render_to_response
@@ -22,6 +23,18 @@ def _gen_tid(n):
     cs = string.ascii_letters + string.digits
     return ''.join(choice(cs) for _ in range(n))
 
+
+def _get_api_url(request):
+    api_url = request.GET.get('mcash_url')
+    if api_url is not None:
+        return api_url
+    server = request.GET.get('mcash_server')
+    logging.debug('SERVER is: {}'.format(server))
+    if server is None:
+        return None
+    return 'https://{}/merchant/v1'.format(server)
+
+
 def main(request):
     products = Product.objects.all()
     resp = render_to_response(
@@ -30,7 +43,7 @@ def main(request):
             request,
             {
                 'products': products,
-                'pos_settings': settings.POS_SETTINGS,
+                'pos_settings': settings.POS_SETTINGS(MERCHANT_API_URL=_get_api_url(request)),
                 'cart_id': _gen_tid(10),
             }
         )
@@ -57,7 +70,7 @@ def ad_order_scan(request):
         return HttpResponseNotAllowed(['POST'])
     data = json.loads(request.body)['object']
     text = 'Nintendo Wii U Premium'
-    pos = POS()
+    pos = POS(api_url=_get_api_url(request))
     pos.put_payment_request(
         'ao-%s' % base64.urlsafe_b64encode(uuid.uuid4().get_bytes()).replace('=',''),
         data['id'],
@@ -78,7 +91,7 @@ def sale_request(request, tid):
         return HttpResponseNotAllowed(['POST'])
     data = json.loads(request.body)
     data['tid'] = tid
-    pos = POS()
+    pos = POS(api_url=_get_api_url(request))
     return HttpResponse(
         json.dumps(pos.put_payment_request(
             tid,
@@ -94,11 +107,11 @@ def sale_request(request, tid):
 def capture(request, tid):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    pos = POS()
+    pos = POS(api_url=_get_api_url(request))
     pos.capture_payment_request(tid)
     return HttpResponse(status=204)
 
 
 def get_outcome(request, tid):
-    pos = POS()
+    pos = POS(api_url=_get_api_url(request))
     return HttpResponse(json.dumps(pos.get_outcome(tid)), content_type='application/json')

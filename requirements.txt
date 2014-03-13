@@ -10,5 +10,6 @@ psycopg2==2.4.6
 pusher==0.7
 pycrypto==2.6
 python-dateutil==2.1
+requests==2.0.1
 six==1.2.0
 wsgiref==0.1.2

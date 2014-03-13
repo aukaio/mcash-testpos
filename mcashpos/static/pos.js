@@ -38,6 +38,7 @@ function Pos(settings, cartId, saleManager, pusher) {
         contentType: 'application/json; charset: UTF-8',
         beforeSend: function(xhr) {
             xhr.setRequestHeader('X-Mcash-Secret', settings.mcashSecret);
+            this.url = this.url + '?mcash_url=' + encodeURI(settings.merchantApiUrl);
         },
         dataType: 'json'
     });
