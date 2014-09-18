@@ -78,6 +78,15 @@ class POS(object):
         url = '/payment_request/'
         return self.do_request(url, data, 'POST')
 
+    def put_ticket(self, pos_tid, ticket_value):
+        ticket = {
+            "caption": "Please display this code at the register",
+            "date_expires": "2020-10-10 12:30:34",
+            "kind": "valuecode",
+            "code": {"type": "string", "data": ticket_value}
+        }
+        return self.do_request('/payment_request/%s/ticket/' % pos_tid, json.dumps({'tickets': [ticket]}), 'PUT')
+
     def get_outcome(self, pos_tid):
         url = '/payment_request/%s/outcome/' % pos_tid
         return self.do_request(url)

@@ -32,7 +32,7 @@ def _get_api_url(request):
     logging.debug('SERVER is: {}'.format(server))
     if server is None:
         return None
-    return 'https://{}/merchant/v1'.format(server)
+    return '{}/merchant/v1'.format(server)
 
 
 def main(request):
@@ -78,6 +78,7 @@ def ad_order_scan(request):
         text,
         additional_edit=False
     )
+
     return HttpResponse(json.dumps({'text':'OK'}))
 
 
@@ -109,6 +110,10 @@ def capture(request, tid):
         return HttpResponseNotAllowed(['POST'])
     pos = POS(api_url=_get_api_url(request))
     pos.capture_payment_request(tid)
+
+    import pdb; pdb.set_trace()
+    pos.put_ticket(tid, "T1CK3T")
+
     return HttpResponse(status=204)
 
 

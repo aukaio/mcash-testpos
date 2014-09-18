@@ -39,7 +39,7 @@
                 pos.setToken(data.object.id);
             });
             $('#btn-complete-sale').click(function() {
-                if (!$(this).hasClass('disabled')) {
+                if (!$(this).hasClass('disabled') && saleManager.total() > 0) {
                     pos.setSaleReady();
                     $(this).addClass('disabled');
                 }
