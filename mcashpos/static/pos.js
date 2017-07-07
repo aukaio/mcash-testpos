@@ -29,6 +29,7 @@ function Pos(settings, cartId, saleManager, pusher) {
     this.token = null;
     this.isReady = false;
     this.saleManager = saleManager;
+    this.currency = settings.currency;
     this.additionalEdit = false;
     this.pusher = pusher;
 
@@ -65,11 +66,12 @@ Pos.prototype.checkReadyAndDoSale = function() {
             this.token,
             this.saleManager.total(),
             this.saleManager.getSaleRequestText(),
+            this.currency,
             this.additionalEdit
         )
     }
 };
-Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdit) {
+Pos.prototype.putPaymentRequest = function(customer, amount, text, currency, additionalEdit) {
     this.paymentRequestTries += 1;
     var tid = this.getPaymentRequestId()
     var channel = this.pusher.subscribe(this.settings.pusherChannelPrefix + 'pr-' + tid);
@@ -79,7 +81,7 @@ Pos.prototype.putPaymentRequest = function(customer, amount, text, additionalEdi
         'customer': customer,
         'amount': amount,
         'text': text || '',
-        'currency': 'NOK',
+        'currency': currency,
         'additionalEdit': additionalEdit || false,
         'allowCredit': true
     }, channel);
@@ -259,4 +261,3 @@ PaymentRequest.prototype.createAndWaitForPayment = function() {
         });
     });
 }
-

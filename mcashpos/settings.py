@@ -168,6 +168,7 @@ class POS_SETTINGS(object):
     POS_ID = '1'
     TESTBED_TOKEN = 'z0YhQz36gbukcS7tdKy-uyVDvX4Hlr7kM_cizah2_EI'
     MCASH_SECRET = 'supersecret'
+    CURRENCY = 'NOK'
     SHORTLINK_ID = '---0'
     PUSHER_APP_ID = '39544'
     PUSHER_APP_KEY = 'b9ad66f2dcad7152fb47'

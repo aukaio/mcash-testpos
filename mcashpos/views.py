@@ -35,6 +35,11 @@ def _get_api_url(request):
     return '{}/merchant/v1'.format(server)
 
 
+def _get_currency(request):
+    currency = request.GET.get('currency')
+    return currency
+
+
 def main(request):
     products = Product.objects.all()
     resp = render_to_response(
@@ -43,7 +48,7 @@ def main(request):
             request,
             {
                 'products': products,
-                'pos_settings': settings.POS_SETTINGS(MERCHANT_API_URL=_get_api_url(request)),
+                'pos_settings': settings.POS_SETTINGS(MERCHANT_API_URL=_get_api_url(request), CURRENCY=_get_currency(request)),
                 'cart_id': _gen_tid(10),
             }
         )
@@ -99,6 +104,7 @@ def sale_request(request, tid):
             data['customer'],
             data['amount'],
             data.get('text', ''),
+            currency=data['currency'],
             additional_edit=data.get('additionalEdit', False)
         ))
     )
@@ -111,7 +117,6 @@ def capture(request, tid):
     pos = POS(api_url=_get_api_url(request))
     pos.capture_payment_request(tid)
 
-    import pdb; pdb.set_trace()
     pos.put_ticket(tid, "T1CK3T")
 
     return HttpResponse(status=204)
